@@ -6,7 +6,7 @@ import Loading from "@/components/ui/Loading";
 import Error from "@/components/ui/Error";
 import Empty from "@/components/ui/Empty";
 import ApperIcon from "@/components/ApperIcon";
-import { getAllChatMessages, sendChatMessage } from "@/services/api/chatService";
+import { getAllChatMessages, sendChatMessageWithAI } from "@/services/api/chatService";
 import { toast } from "react-toastify";
 
 const Chat = () => {
@@ -43,7 +43,7 @@ const Chat = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  const handleSendMessage = async (e) => {
+const handleSendMessage = async (e) => {
     e.preventDefault();
     if (!newMessage.trim() || sending) return;
 
@@ -52,40 +52,29 @@ const Chat = () => {
     setSending(true);
 
     try {
-      // Add user message
-      const userMsg = await sendChatMessage(userMessage, "user");
-      setMessages(prev => [...prev, userMsg]);
-
-      // Show typing indicator
+      // Show typing indicator immediately
       setIsTyping(true);
       
-      // Simulate AI response after delay
-      setTimeout(async () => {
+      // Send message and get AI response
+      const { userMessage: userMsg, aiMessage } = await sendChatMessageWithAI(userMessage);
+      
+      // Add user message first
+      setMessages(prev => [...prev, userMsg]);
+      
+      // Add small delay for better UX, then add AI response
+      setTimeout(() => {
         setIsTyping(false);
-        const aiResponse = await sendChatMessage(generateAIResponse(userMessage), "assistant");
-        setMessages(prev => [...prev, aiResponse]);
-      }, 1500);
+        setMessages(prev => [...prev, aiMessage]);
+        toast.success("Message sent successfully! 💬");
+      }, 1000);
 
     } catch (error) {
-      toast.error("Failed to send message. Please try again.");
+      setIsTyping(false);
+      toast.error("Failed to send message. Please check your API key and try again.");
+      console.error('Chat error:', error);
     } finally {
       setSending(false);
     }
-  };
-
-  const generateAIResponse = (userMessage) => {
-    const responses = [
-      "That sounds wonderful! I love hearing about your day 😊 Tell me more about what made it special!",
-      "I'm so proud of you for sharing that with me! 🥳 It really shows how much you're growing.",
-      "What a beautiful memory! ✨ I can feel the joy in your words. How did it make you feel?",
-      "That's amazing! 🌟 I'm always here to celebrate these moments with you. You're doing great!",
-      "I love how you notice the little things that matter! 💝 That's what makes you so special.",
-      "Thank you for trusting me with your thoughts! 🤗 I'm always here to listen and support you.",
-      "That's such a meaningful experience! 🔥 I can see how much it means to you.",
-      "You have such a beautiful way of seeing the world! 🌸 Keep embracing these moments!"
-    ];
-    
-    return responses[Math.floor(Math.random() * responses.length)];
   };
 
   if (loading) return <Loading />;
@@ -123,12 +112,12 @@ const Chat = () => {
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto px-4 py-6 pb-20">
-        {messages.length === 0 ? (
+{messages.length === 0 ? (
           <Empty
             title="Start a conversation!"
-            description="Hi there! I'm Momento, your AI best friend. Share what's on your mind and let's chat! 🤗"
+            description="Hi there! I'm Momento, your AI best friend powered by GPT-4! Share what's on your mind and let's chat! 🤗✨"
             actionText="Say Hello"
-            onAction={() => setNewMessage("Hello Momento!")}
+            onAction={() => setNewMessage("Hello Momento! How are you today?")}
             icon="MessageCircle"
           />
         ) : (
