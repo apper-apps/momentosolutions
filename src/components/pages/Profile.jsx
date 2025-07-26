@@ -1,31 +1,23 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import Card from "@/components/atoms/Card";
-import Button from "@/components/atoms/Button";
+import { useSelector } from "react-redux";
+import { toast } from "react-toastify";
+import ApperIcon from "@/components/ApperIcon";
 import StreakCounter from "@/components/molecules/StreakCounter";
 import XPProgress from "@/components/molecules/XPProgress";
-import ApperIcon from "@/components/ApperIcon";
-import { getCurrentUser } from "@/services/api/userService";
-import { toast } from "react-toastify";
+import Loading from "@/components/ui/Loading";
+import Button from "@/components/atoms/Button";
+import Card from "@/components/atoms/Card";
 
 const Profile = () => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const { user, isAuthenticated } = useSelector((state) => state.user);
+  const [loading, setLoading] = useState(!isAuthenticated);
 
   useEffect(() => {
-    loadUserData();
-  }, []);
-
-  const loadUserData = async () => {
-    try {
-      const userData = await getCurrentUser();
-      setUser(userData);
-    } catch (error) {
-      console.error("Failed to load user data:", error);
-    } finally {
+    if (isAuthenticated && user) {
       setLoading(false);
     }
-  };
+  }, [isAuthenticated, user]);
 
   const handleUpgradeClick = () => {
     toast.info("Premium upgrade coming soon! 🚀");
@@ -48,13 +40,13 @@ const Profile = () => {
     );
   }
 
-  const badges = [
+const badges = [
     { id: 1, name: "First Memory", emoji: "🌟", unlocked: true },
-    { id: 2, name: "7 Day Streak", emoji: "🔥", unlocked: user.streakCount >= 7 },
+    { id: 2, name: "7 Day Streak", emoji: "🔥", unlocked: (user?.streakCount || 0) >= 7 },
     { id: 3, name: "Chat Master", emoji: "💬", unlocked: false },
     { id: 4, name: "Time Keeper", emoji: "⏳", unlocked: false },
     { id: 5, name: "Memory Collector", emoji: "📜", unlocked: false },
-    { id: 6, name: "Level 5", emoji: "🏆", unlocked: user.level >= 5 },
+    { id: 6, name: "Level 5", emoji: "🏆", unlocked: (user?.level || 1) >= 5 },
   ];
 
   return (
@@ -80,8 +72,8 @@ const Profile = () => {
           >
             <span className="text-4xl">👤</span>
           </motion.div>
-          <h1 className="text-3xl font-display text-secondary mb-2">{user.name}</h1>
-          <p className="text-gray-600">{user.email}</p>
+          <h1 className="text-3xl font-display text-secondary mb-2">{user.firstName} {user.lastName}</h1>
+          <p className="text-gray-600">{user.emailAddress}</p>
         </motion.div>
 
         {/* Stats Cards */}
@@ -91,8 +83,8 @@ const Profile = () => {
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.2 }}
           >
-            <Card className="p-6 text-center">
-              <StreakCounter streakCount={user.streakCount} className="justify-center" />
+<Card className="p-6 text-center">
+              <StreakCounter streakCount={user.streakCount || 0} className="justify-center" />
             </Card>
           </motion.div>
 
@@ -101,8 +93,8 @@ const Profile = () => {
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.3 }}
           >
-            <Card className="p-6">
-              <XPProgress xp={user.xpPoints} level={user.level} />
+<Card className="p-6">
+              <XPProgress xp={user.xpPoints || 0} level={user.level || 1} />
             </Card>
           </motion.div>
         </div>

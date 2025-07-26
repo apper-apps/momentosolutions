@@ -1,16 +1,19 @@
 import OpenAI from "openai";
-import chatData from "@/services/mockData/chatMessages.json";
+
 // Initialize OpenAI client
 const openai = new OpenAI({
   apiKey: import.meta.env.VITE_OPENAI_API_KEY,
   dangerouslyAllowBrowser: true
 });
 
-// Simple delay utility
-const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+// Initialize ApperClient with Project ID and Public Key
+const { ApperClient } = window.ApperSDK;
+const apperClient = new ApperClient({
+  apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+  apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+});
 
-// In-memory storage for messages
-let messages = [...chatData];
+const tableName = 'chat_message';
 
 // Get AI response from OpenAI GPT-4
 const getAIResponse = async (userMessage, conversationHistory = []) => {
@@ -66,53 +69,185 @@ Keep responses conversational, personal, and under 150 words. Focus on being a s
 
 // Get all chat messages
 export const getAllChatMessages = async () => {
-  await delay(100);
-  return [...messages];
+  try {
+    const params = {
+      fields: [
+        { field: { Name: 'Name' } },
+        { field: { Name: 'content' } },
+        { field: { Name: 'role' } },
+        { field: { Name: 'timestamp' } },
+        { field: { Name: 'contextMemoryIds' } },
+        { field: { Name: 'Tags' } },
+        { field: { Name: 'userId' } }
+      ],
+      orderBy: [
+        {
+          fieldName: 'timestamp',
+          sorttype: 'ASC'
+        }
+      ],
+      pagingInfo: {
+        limit: 100,
+        offset: 0
+      }
+    };
+
+    const response = await apperClient.fetchRecords(tableName, params);
+    
+    if (!response.success) {
+      console.error("Error fetching chat messages:", response.message);
+      throw new Error(response.message);
+    }
+
+    return response.data || [];
+  } catch (error) {
+    if (error?.response?.data?.message) {
+      console.error("Error fetching chat messages:", error?.response?.data?.message);
+    } else {
+      console.error("Error fetching chat messages:", error.message);
+    }
+    throw error;
+  }
 };
 
-
 export const getChatMessageById = async (id) => {
-  await delay(100);
-  return messages.find(message => message.Id === id);
+  try {
+    const params = {
+      fields: [
+        { field: { Name: 'Name' } },
+        { field: { Name: 'content' } },
+        { field: { Name: 'role' } },
+        { field: { Name: 'timestamp' } },
+        { field: { Name: 'contextMemoryIds' } },
+        { field: { Name: 'Tags' } },
+        { field: { Name: 'userId' } }
+      ]
+    };
+
+    const response = await apperClient.getRecordById(tableName, parseInt(id), params);
+    
+    if (!response.success) {
+      console.error(`Error fetching chat message with ID ${id}:`, response.message);
+      throw new Error(response.message);
+    }
+
+    return response.data;
+  } catch (error) {
+    if (error?.response?.data?.message) {
+      console.error(`Error fetching chat message with ID ${id}:`, error?.response?.data?.message);
+    } else {
+      console.error(`Error fetching chat message with ID ${id}:`, error.message);
+    }
+    throw error;
+  }
 };
 
 // Send a new chat message
 export const sendChatMessage = async (content, role = "user") => {
-  await delay(300);
-  
-  const newMessage = {
-    Id: messages.length > 0 ? Math.max(...messages.map(m => m.Id)) + 1 : 1,
-    content,
-    role,
-    timestamp: new Date().toISOString(),
-    isRead: false
-  };
-  
-  messages.push(newMessage);
-  return newMessage;
+  try {
+    // Only include updateable fields
+    const updateableData = {
+      Name: content.substring(0, 50) || 'Chat Message',
+      content: content,
+      role: role,
+      timestamp: new Date().toISOString(),
+      contextMemoryIds: '',
+      Tags: '',
+      userId: parseInt(1) // Default user ID
+    };
+
+    const params = {
+      records: [updateableData]
+    };
+
+    const response = await apperClient.createRecord(tableName, params);
+    
+    if (!response.success) {
+      console.error("Error sending chat message:", response.message);
+      throw new Error(response.message);
+    }
+
+    if (response.results) {
+      const successfulRecords = response.results.filter(result => result.success);
+      const failedRecords = response.results.filter(result => !result.success);
+      
+      if (failedRecords.length > 0) {
+        console.error(`Failed to send chat messages ${failedRecords.length} records:${JSON.stringify(failedRecords)}`);
+        
+        failedRecords.forEach(record => {
+          record.errors?.forEach(error => {
+            throw new Error(`${error.fieldLabel}: ${error.message}`);
+          });
+          if (record.message) throw new Error(record.message);
+        });
+      }
+      
+      return successfulRecords.length > 0 ? successfulRecords[0].data : null;
+    }
+  } catch (error) {
+    if (error?.response?.data?.message) {
+      console.error("Error sending chat message:", error?.response?.data?.message);
+    } else {
+      console.error("Error sending chat message:", error.message);
+    }
+    throw error;
+  }
 };
 
 // Send message and get AI response
 export const sendChatMessageWithAI = async (userMessage) => {
-  // Add user message
-  const userMsg = await sendChatMessage(userMessage, "user");
-  
-  // Get conversation history for context
-  const recentMessages = messages.slice(-10).map(msg => ({
-    role: msg.role,
-    content: msg.content
-  }));
-  
-  // Get AI response
-  const aiResponseContent = await getAIResponse(userMessage, recentMessages);
-  const aiMessage = await sendChatMessage(aiResponseContent, "assistant");
-  
-  return { userMessage: userMsg, aiMessage };
+  try {
+    // Add user message
+    const userMsg = await sendChatMessage(userMessage, "user");
+    
+    // Get conversation history for context
+    const allMessages = await getAllChatMessages();
+    const recentMessages = allMessages.slice(-10).map(msg => ({
+      role: msg.role,
+      content: msg.content
+    }));
+    
+    // Get AI response
+    const aiResponseContent = await getAIResponse(userMessage, recentMessages);
+    const aiMessage = await sendChatMessage(aiResponseContent, "assistant");
+    
+    return { userMessage: userMsg, aiMessage };
+  } catch (error) {
+    console.error("Error in sendChatMessageWithAI:", error.message);
+    throw error;
+  }
 };
 
 // Clear chat history
 export const clearChatHistory = async () => {
-  await delay(200);
-  messages = [];
-  return true;
+  try {
+    // Get all messages first
+    const allMessages = await getAllChatMessages();
+    
+    if (allMessages.length === 0) {
+      return true;
+    }
+
+    // Delete all messages
+    const messageIds = allMessages.map(msg => msg.Id);
+    const params = {
+      RecordIds: messageIds
+    };
+
+    const response = await apperClient.deleteRecord(tableName, params);
+    
+    if (!response.success) {
+      console.error("Error clearing chat history:", response.message);
+      throw new Error(response.message);
+    }
+
+    return true;
+  } catch (error) {
+    if (error?.response?.data?.message) {
+      console.error("Error clearing chat history:", error?.response?.data?.message);
+    } else {
+      console.error("Error clearing chat history:", error.message);
+    }
+    throw error;
+  }
 };
