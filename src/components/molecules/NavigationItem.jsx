@@ -7,11 +7,11 @@ const NavigationItem = ({ to, icon, label, emoji, className = "" }) => {
   return (
     <NavLink
       to={to}
-      className={({ isActive }) => 
+className={({ isActive }) => 
         `flex flex-col items-center justify-center py-2 px-3 rounded-xl transition-all duration-200 ${
           isActive 
-            ? "text-primary" 
-            : "text-gray-400 hover:text-primary"
+            ? "text-gray-700 bg-gray-100" 
+            : "text-gray-400 hover:text-gray-600"
         } ${className}`
       }
     >
@@ -25,8 +25,8 @@ const NavigationItem = ({ to, icon, label, emoji, className = "" }) => {
             <span className="text-2xl block mb-1">{emoji}</span>
             {isActive && (
               <motion.div
-                layoutId="activeTab"
-                className="absolute -inset-2 gradient-pink-purple rounded-xl opacity-10"
+layoutId="activeTab"
+                className="absolute -inset-2 bg-gray-100 rounded-xl opacity-50"
               />
             )}
           </motion.div>

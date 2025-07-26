@@ -85,8 +85,13 @@ useEffect(() => {
               } else {
                 navigate('/');
               }
-              // Store user information in Redux
-              dispatch(setUser(JSON.parse(JSON.stringify(user))));
+// Store user information in Redux with proper defaults
+              const userData = JSON.parse(JSON.stringify(user));
+              // Ensure user has proper default values
+              if (!userData.level || userData.level < 1) userData.level = 1;
+              if (!userData.xpPoints) userData.xpPoints = 0;
+              if (!userData.streakCount) userData.streakCount = 0;
+              dispatch(setUser(userData));
             } else {
               // User is not authenticated
               if (!isAuthPage) {

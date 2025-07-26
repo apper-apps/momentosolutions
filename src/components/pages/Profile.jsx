@@ -94,7 +94,7 @@ const badges = [
             transition={{ delay: 0.3 }}
           >
 <Card className="p-6">
-              <XPProgress xp={user.xpPoints || 0} level={user.level || 1} />
+              <XPProgress xp={user.xpPoints || 0} level={Math.max(1, user.level || 1)} />
             </Card>
           </motion.div>
         </div>

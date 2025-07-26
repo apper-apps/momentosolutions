@@ -61,9 +61,20 @@ export const updateUserStats = async (userId, updates) => {
       }
     });
 
-    // Update level based on XP if xpPoints is being updated
-    if (updateableData.xpPoints) {
-      updateableData.level = Math.floor(updateableData.xpPoints / 1000) + 1;
+// Update level based on XP if xpPoints is being updated
+    if (updateableData.xpPoints !== undefined) {
+      updateableData.level = Math.max(1, Math.floor(updateableData.xpPoints / 1000) + 1);
+    }
+    
+    // Ensure minimum values for new users
+    if (updateableData.xpPoints === undefined || updateableData.xpPoints === null) {
+      updateableData.xpPoints = 0;
+    }
+    if (updateableData.level === undefined || updateableData.level === null) {
+      updateableData.level = 1;
+    }
+    if (updateableData.streakCount === undefined || updateableData.streakCount === null) {
+      updateableData.streakCount = 0;
     }
 
     const params = {
