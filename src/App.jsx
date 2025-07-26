@@ -29,14 +29,22 @@ function App() {
   const isAuthenticated = userState?.isAuthenticated || false;
   
 // Initialize ApperUI once when the app loads
-  useEffect(() => {
+useEffect(() => {
     let timeoutId;
     
     const initializeAuth = () => {
       // Check if ApperSDK is available
       if (!window.ApperSDK) {
-        console.error("ApperSDK not loaded from CDN");
-        setIsInitialized(true);
+        console.warn("ApperSDK not loaded from CDN, retrying...");
+        // Retry after a short delay in case SDK is still loading
+        setTimeout(() => {
+          if (!window.ApperSDK) {
+            console.error("ApperSDK failed to load from CDN");
+            setIsInitialized(true);
+            return;
+          }
+          initializeAuth();
+        }, 1000);
         return;
       }
 
@@ -113,6 +121,7 @@ function App() {
         });
       } catch (error) {
         console.error("Failed to initialize authentication:", error);
+        if (timeoutId) clearTimeout(timeoutId);
         setIsInitialized(true);
       }
     };
@@ -121,10 +130,10 @@ function App() {
     timeoutId = setTimeout(() => {
       console.warn("Authentication initialization timeout, proceeding with app load");
       setIsInitialized(true);
-    }, 5000);
+    }, 10000); // Increased to 10 seconds to allow for CDN loading
 
-    // Initialize authentication
-    initializeAuth();
+    // Wait a moment for DOM to be ready, then initialize authentication
+    setTimeout(initializeAuth, 100);
 
     // Cleanup timeout on unmount
     return () => {
