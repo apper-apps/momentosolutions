@@ -1,0 +1,14 @@
+[
+  {
+    "Id": 1,
+    "name": "Alex",
+    "email": "alex@momento.ai",
+    "streakCount": 5,
+    "xpPoints": 850,
+    "level": 3,
+    "badges": ["first-memory", "7-day-streak"],
+    "subscriptionStatus": "free",
+    "dailyChatCount": 3,
+    "lastActive": "2024-01-15T10:30:00.000Z"
+  }
+]

@@ -1,0 +1,52 @@
+[
+  {
+    "Id": 1,
+    "userId": "1",
+    "content": "Had the most amazing coffee this morning at the new cafe downtown. The barista drew a perfect heart in the foam, and it just made my entire day brighter. Sometimes it's the little things that matter most.",
+    "type": "text",
+    "mood": "happy",
+    "timestamp": "2024-01-15T08:30:00.000Z",
+    "tags": ["coffee", "morning", "happiness"],
+    "reactions": ["😊", "❤️"]
+  },
+  {
+    "Id": 2,
+    "userId": "1",
+    "content": "Watched the sunset from my apartment balcony today. The sky was painted in the most incredible shades of orange and pink. I felt so grateful for this moment of peace after a hectic week.",
+    "type": "text",
+    "mood": "calm",
+    "timestamp": "2024-01-14T18:45:00.000Z",
+    "tags": ["sunset", "gratitude", "peace"],
+    "reactions": ["😌", "🌅"]
+  },
+  {
+    "Id": 3,
+    "userId": "1",
+    "content": "My best friend surprised me with tickets to see my favorite band! I literally jumped up and down when they told me. Can't wait for the concert next month!",
+    "type": "text",
+    "mood": "excited",
+    "timestamp": "2024-01-13T19:20:00.000Z",
+    "tags": ["friends", "music", "surprise"],
+    "reactions": ["🎉", "🎵"]
+  },
+  {
+    "Id": 4,
+    "userId": "1",
+    "content": "Finished reading 'The Seven Husbands of Evelyn Hugo' today. What an emotional rollercoaster! The ending had me in tears but also feeling so fulfilled. Great storytelling.",
+    "type": "text",
+    "mood": "love",
+    "timestamp": "2024-01-12T22:15:00.000Z",
+    "tags": ["books", "emotions", "story"],
+    "reactions": ["📚", "❤️"]
+  },
+  {
+    "Id": 5,
+    "userId": "1",
+    "content": "Tried to cook a fancy dinner tonight but it didn't turn out as expected. The pasta was overcooked and the sauce was too salty. Ordered pizza instead and laughed about it.",
+    "type": "text",
+    "mood": "sad",
+    "timestamp": "2024-01-11T20:00:00.000Z",
+    "tags": ["cooking", "failure", "humor"],
+    "reactions": ["😅", "🍕"]
+  }
+]

@@ -1,0 +1,76 @@
+@import url('https://fonts.googleapis.com/css2?family=Fredoka+One:wght@400&family=Inter:wght@300;400;500;600;700&display=swap');
+@import 'react-toastify/dist/ReactToastify.css';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: 'Inter', sans-serif;
+  }
+  
+  .font-display {
+    font-family: 'Fredoka One', cursive;
+  }
+}
+
+@layer utilities {
+  .gradient-pink-purple {
+    background: linear-gradient(135deg, #FF6FB5 0%, #845EC2 100%);
+  }
+  
+  .gradient-aqua-yellow {
+    background: linear-gradient(135deg, #00C9A7 0%, #F9F871 100%);
+  }
+  
+  .gradient-mood-happy {
+    background: linear-gradient(135deg, #F9F871 0%, #00C9A7 100%);
+  }
+  
+  .gradient-mood-sad {
+    background: linear-gradient(135deg, #845EC2 0%, #4ECDC4 100%);
+  }
+  
+  .gradient-mood-excited {
+    background: linear-gradient(135deg, #FF6FB5 0%, #F9F871 100%);
+  }
+  
+  .gradient-mood-calm {
+    background: linear-gradient(135deg, #4ECDC4 0%, #845EC2 100%);
+  }
+  
+  .gradient-mood-love {
+    background: linear-gradient(135deg, #FF6FB5 0%, #FF6B6B 100%);
+  }
+  
+  .gradient-mood-default {
+    background: linear-gradient(135deg, #00C9A7 0%, #845EC2 100%);
+  }
+}
+
+/* Toast Notifications */
+.Toastify__toast-container {
+  font-family: 'Inter', sans-serif;
+  z-index: 9999;
+}
+
+.Toastify__toast {
+  border-radius: 16px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(135deg, #FF6FB5 0%, #845EC2 100%);
+  color: white;
+  min-height: 56px;
+}
+
+.Toastify__toast--success {
+  background: linear-gradient(135deg, #00C9A7 0%, #4ECDC4 100%);
+}
+
+.Toastify__toast--error {
+  background: linear-gradient(135deg, #FF6B6B 0%, #FF6FB5 100%);
+}
+
+.Toastify__toast--warning {
+  background: linear-gradient(135deg, #F9F871 0%, #00C9A7 100%);
+  color: #2D3748;
+}

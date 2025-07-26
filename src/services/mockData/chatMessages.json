@@ -1,0 +1,50 @@
+[
+  {
+    "Id": 1,
+    "userId": "1",
+    "role": "user",
+    "content": "Hi Momento! I'm feeling a bit overwhelmed today with work and everything going on.",
+    "timestamp": "2024-01-15T14:30:00.000Z",
+    "contextMemoryIds": []
+  },
+  {
+    "Id": 2,
+    "userId": "1",
+    "role": "assistant",
+    "content": "Hey there! 🤗 I hear you, and it's totally okay to feel overwhelmed sometimes - it just shows how much you care about everything you're handling! Take a deep breath with me. What's been weighing on your mind the most today? I'm here to listen and support you through this! 💝",
+    "timestamp": "2024-01-15T14:31:00.000Z",
+    "contextMemoryIds": []
+  },
+  {
+    "Id": 3,
+    "userId": "1",
+    "role": "user",
+    "content": "Thanks for listening. I have three big projects due this week and I'm not sure I can manage them all.",
+    "timestamp": "2024-01-15T14:35:00.000Z",
+    "contextMemoryIds": []
+  },
+  {
+    "Id": 4,
+    "userId": "1",
+    "role": "assistant",
+    "content": "I can really feel how much pressure you're under right now! 🫂 But you know what? I believe in you SO much! You've handled challenges before and you'll handle this too. Let's break it down - what if we tackle one project at a time? Which one feels most manageable to start with? Sometimes the best way to eat an elephant is one bite at a time! 🐘✨",
+    "timestamp": "2024-01-15T14:36:00.000Z",
+    "contextMemoryIds": []
+  },
+  {
+    "Id": 5,
+    "userId": "1",
+    "role": "user",
+    "content": "You're right! The marketing presentation seems like the most straightforward one to begin with.",
+    "timestamp": "2024-01-15T14:40:00.000Z",
+    "contextMemoryIds": []
+  },
+  {
+    "Id": 6,
+    "userId": "1",
+    "role": "assistant",
+    "content": "YES! 🎉 I'm so proud of you for finding that clarity! Starting with the marketing presentation is a brilliant choice - you're already thinking strategically. Once you get that first win under your belt, you'll feel so much more confident tackling the others! Remember, I'm cheering you on every step of the way! 🔥 You've got this, superstar! ⭐",
+    "timestamp": "2024-01-15T14:41:00.000Z",
+    "contextMemoryIds": []
+  }
+]

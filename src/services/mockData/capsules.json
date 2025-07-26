@@ -1,0 +1,29 @@
+[
+  {
+    "Id": 1,
+    "userId": "1",
+    "message": "Hey future me! I hope you're doing amazing. Right now I'm feeling so hopeful about the future and excited about all the possibilities ahead. Remember to stay curious and keep chasing your dreams!",
+    "unlockDate": "2024-06-15T12:00:00.000Z",
+    "recipientEmail": "alex@momento.ai",
+    "isUnlocked": false,
+    "createdAt": "2024-01-15T10:00:00.000Z"
+  },
+  {
+    "Id": 2,
+    "userId": "1",
+    "message": "I just started learning guitar today! My fingers hurt and I can barely play a chord, but I'm determined to get better. By the time you read this, I hope you're playing beautiful music!",
+    "unlockDate": "2024-07-15T12:00:00.000Z",
+    "recipientEmail": null,
+    "isUnlocked": false,
+    "createdAt": "2024-01-10T15:30:00.000Z"
+  },
+  {
+    "Id": 3,
+    "userId": "1",
+    "message": "Today I decided to be braver and more honest with people I care about. I told Mom how much she means to me, called an old friend, and finally said 'I love you' first. Growth feels scary but amazing!",
+    "unlockDate": "2024-02-14T12:00:00.000Z",
+    "recipientEmail": "alex@momento.ai",
+    "isUnlocked": true,
+    "createdAt": "2024-01-01T09:00:00.000Z"
+  }
+]
