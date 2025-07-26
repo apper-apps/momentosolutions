@@ -13,11 +13,13 @@ const Chat = () => {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [newMessage, setNewMessage] = useState("");
+const [newMessage, setNewMessage] = useState("");
   const [sending, setSending] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
+  const [isListening, setIsListening] = useState(false);
+  const [recognition, setRecognition] = useState(null);
+  const [speechSupported, setSpeechSupported] = useState(false);
   const messagesEndRef = useRef(null);
-
   useEffect(() => {
     loadMessages();
   }, []);
@@ -76,7 +78,73 @@ const handleSendMessage = async (e) => {
       setSending(false);
     }
   };
+// Initialize speech recognition
+  const initializeSpeechRecognition = () => {
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const recognitionInstance = new SpeechRecognition();
+      
+      recognitionInstance.continuous = false;
+      recognitionInstance.interimResults = false;
+      recognitionInstance.lang = 'en-US';
+      
+      recognitionInstance.onstart = () => {
+        setIsListening(true);
+      };
+      
+      recognitionInstance.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        setNewMessage(transcript);
+        toast.success("Voice message captured! 🎤");
+      };
+      
+      recognitionInstance.onerror = (event) => {
+        console.error('Speech recognition error:', event.error);
+        setIsListening(false);
+        if (event.error === 'not-allowed') {
+          toast.error("Microphone permission denied. Please allow microphone access.");
+        } else if (event.error === 'no-speech') {
+          toast.error("No speech detected. Please try again.");
+        } else {
+          toast.error("Voice recognition failed. Please try again.");
+        }
+      };
+      
+      recognitionInstance.onend = () => {
+        setIsListening(false);
+      };
+      
+      setRecognition(recognitionInstance);
+      setSpeechSupported(true);
+    } else {
+      setSpeechSupported(false);
+      console.warn('Speech recognition not supported in this browser');
+    }
+  };
 
+  // Start listening
+  const startListening = () => {
+    if (recognition && !isListening) {
+      try {
+        recognition.start();
+      } catch (error) {
+        console.error('Error starting speech recognition:', error);
+        toast.error("Failed to start voice recognition. Please try again.");
+      }
+    }
+  };
+
+  // Stop listening
+  const stopListening = () => {
+    if (recognition && isListening) {
+      recognition.stop();
+    }
+  };
+
+  // Set up speech recognition on mount
+  useEffect(() => {
+    initializeSpeechRecognition();
+  }, []);
   if (loading) return <Loading />;
   if (error) return <Error message={error} onRetry={loadMessages} />;
 
@@ -158,16 +226,35 @@ const handleSendMessage = async (e) => {
       </div>
 
       {/* Message Input */}
-      <div className="bg-white border-t border-gray-100 p-4">
+<div className="bg-white border-t border-gray-100 p-4">
         <form onSubmit={handleSendMessage} className="flex gap-3">
-          <input
-            type="text"
-            value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
-            placeholder="Share your thoughts..."
-            disabled={sending}
-            className="flex-1 px-4 py-3 border-2 border-gray-200 rounded-pill bg-white focus:border-primary focus:ring-0 focus:outline-none transition-colors duration-200 placeholder:text-gray-400"
-          />
+          <div className="flex-1 relative">
+            <input
+              type="text"
+              value={newMessage}
+              onChange={(e) => setNewMessage(e.target.value)}
+              placeholder="Share your thoughts..."
+              className="w-full px-4 py-3 pr-12 border-2 border-gray-200 rounded-pill bg-white focus:border-primary focus:ring-0 focus:outline-none transition-colors duration-200 placeholder:text-gray-400"
+            />
+            {speechSupported && (
+              <button
+                type="button"
+                onClick={isListening ? stopListening : startListening}
+                className={`absolute right-3 top-1/2 transform -translate-y-1/2 p-2 rounded-full transition-all duration-200 ${
+                  isListening 
+                    ? 'bg-red-500 text-white animate-pulse' 
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+                aria-label={isListening ? "Stop recording" : "Start voice recording"}
+              >
+                <ApperIcon 
+                  name={isListening ? "MicOff" : "Mic"} 
+                  size={16}
+                  className={isListening ? "animate-pulse" : ""}
+                />
+              </button>
+            )}
+          </div>
           <Button
             type="submit"
             disabled={!newMessage.trim() || sending}
